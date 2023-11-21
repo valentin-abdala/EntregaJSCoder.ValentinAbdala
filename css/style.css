@@ -1,0 +1,16 @@
+body {
+    padding: 0;
+}
+
+.contenedor {
+    display: grid;
+    grid-template-columns: repeat(3, 332px);
+    gap: 50px;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0;
+}
+
+.botones {
+    padding: 25px;
+}
