@@ -30,6 +30,20 @@ const tiramisu = new Torta('Tiramisú', 4400, 0, 'tiramisu.jpg')
 
 const tortas = [almendrado, brownie, eclaire, flan, frutosr, lemon, maicena, mani, maracuya, marquise, mixto, pastelera, rogel, scons, tiramisu];
 
+setTimeout(function () {
+    let contenedorInicial = document.createElement('div');
+    contenedorInicial.classList.add('contenedor-inicial');
+    
+    let textoInicial = document.createElement('p');
+    textoInicial.classList.add('texto-inicial');
+    textoInicial.innerText = `ESCOGE TUS POSTRES PREFERIDOS DE LA PASTELERÍA TRADICIONAL`
+
+    contenedorInicial.appendChild(textoInicial);
+    document.body.insertBefore(contenedorInicial, document.querySelector('.contenedor'));
+}, 2500)
+
+
+
 function mostrarTortas() {
 
     // CONTENEDOR CENTRAL QUE CONTIENE LAS GRILLAS
@@ -55,9 +69,8 @@ function mostrarTortas() {
 
         // BOTONES PARA SUMAR Y RESTAR CANTIDADES AL CARRITO
         let botonSuma = document.createElement('button');
+        botonSuma.classList.add('agregar');
         botonSuma.innerText = `+`;
-        let botonResta = document.createElement('button');
-        botonResta.innerText = `-`;
 
         // FUNCIONALIDAD BOTÓN SUMA 
         botonSuma.addEventListener('click', function() {
@@ -70,21 +83,9 @@ function mostrarTortas() {
             mostrarCarritoEnTexto();
         })
 
-        // FUNCIONALIDAD BOTÓN RESTA
-        botonResta.addEventListener('click', function() {
-            let indexResta = tortas.indexOf(torta);
-
-            tortas[indexResta].cantidad = tortas[indexResta].cantidad - 1;
-            carrito.pop(tortas[indexResta])
-            totalAPagar = totalAPagar - torta.precio;
-
-            mostrarCarritoEnTexto();
-        })
-
         contenedorTorta.appendChild(imagenTorta);
         contenedorTorta.appendChild(infoTorta);
         contenedorTorta.appendChild(botonSuma);
-        contenedorTorta.appendChild(botonResta);
         contenedor.appendChild(contenedorTorta);
     }
 
@@ -95,8 +96,10 @@ mostrarTortas();
 
 // CARRITO EN TEXTO
 let carritoTexto = document.createElement('h1');
+carritoTexto.classList.add('info-pago');
 document.body.appendChild(carritoTexto);
 let montoTexto = document.createElement('h1');
+montoTexto.classList.add('info-pago');
 document.body.appendChild(montoTexto);
 
 function mostrarCarritoEnTexto() {
@@ -115,11 +118,58 @@ function mostrarCarritoEnTexto() {
 }
 mostrarCarritoEnTexto();
 
+let contenedorBotones = document.createElement('div');
+contenedorBotones.classList.add('contenedor-botones');
+
 // BOTÓN FINALIZAR COMPRA
 let botonComprar = document.createElement('button');
 botonComprar.classList.add('botones');
 botonComprar.innerText = `Finalizar Compra`;
-document.body.appendChild(botonComprar);
+
+botonComprar.addEventListener('click', () => {
+    if (totalAPagar < 1000) {
+        Swal.fire({
+            text: 'Tu pedido es muy pequeño para finalizarlo',
+            icon: 'error',
+            confirmButtonText: 'Continuar comprando',
+            timer: 5000
+        });
+    } else {
+        Swal.fire({
+            text: 'Tu pedido se ha concretado con éxito',
+            icon: 'success',
+            confirmButtonText: 'Aceptar',
+            timer: 5000
+        });
+    }
+})
+
+contenedorBotones.appendChild(botonComprar);
+
+// BOTÓN QUITAR DEL CARRO
+let botonSacar = document.createElement('button');
+botonSacar.classList.add('botones');
+botonSacar.innerText = `Quitar Último Item Agregado`;
+
+botonSacar.addEventListener('click', function() {
+    if (carrito.length > 0) {
+        let ultimoItem = carrito.pop();
+        totalAPagar = totalAPagar - ultimoItem.precio;
+
+        mostrarCarritoEnTexto();
+    }
+    Swal.fire({
+        title: 'Item quitado',
+        icon: 'success',
+        position: 'top-end',
+        width: 300,
+        toast: true,
+        timer: 6000,
+        showConfirmButton: false,
+        background: 'indianred'
+    });
+})
+contenedorBotones.appendChild(botonSacar);
 
 // FUNCIÓN PARA GUARDAR EL CARRITO EN LOCAL STORAGE
 function guardarLocalStorage() {
@@ -138,35 +188,65 @@ function cargarLocalStorage() {
 let botonVaciar = document.createElement('button');
 botonVaciar.innerText = `Vaciar Carro`;
 botonVaciar.classList.add('botones')
-document.body.appendChild(botonVaciar);
+contenedorBotones.appendChild(botonVaciar);
 
 botonVaciar.addEventListener('click', function() {
     carrito = [];
     totalAPagar = 0;
     mostrarCarritoEnTexto();
+    Swal.fire({
+        title: 'Carrito vaciado',
+        icon: 'success',
+        position: 'top-end',
+        width: 300,
+        toast: true,
+        timer: 6000,
+        showConfirmButton: false,
+        background: 'indianred'
+    });
 })
 
 // BOTÓN GUARDAR
 let guardarCarrito = document.createElement('button');
 guardarCarrito.innerText = `Guardar Carrito`;
 guardarCarrito.classList.add('botones')
-document.body.appendChild(guardarCarrito);
+contenedorBotones.appendChild(guardarCarrito);
 
 // BOTÓN CARGAR
 let cargarCarrito = document.createElement('button');
 cargarCarrito.innerText = `Cargar Carrito`;
 cargarCarrito.classList.add('botones')
-document.body.appendChild(cargarCarrito);
+contenedorBotones.appendChild(cargarCarrito);
 
 // FUNCIONALIDADES BOTONES GUARDAR Y CARGAR
 guardarCarrito.addEventListener('click', function() {
     guardarLocalStorage();
     mostrarCarritoEnTexto();
+    Swal.fire({
+        title: 'Carrito guardado',
+        icon: 'success',
+        position: 'top-end',
+        width: 300,
+        toast: true,
+        timer: 6000,
+        showConfirmButton: false,
+        background: 'indianred'
+    });
 })
 
 cargarCarrito.addEventListener('click', function() {
     cargarLocalStorage();
     mostrarCarritoEnTexto();
+    Swal.fire({
+        title: 'Carrito cargado',
+        icon: 'success',
+        position: 'top-end',
+        width: 300,
+        toast: true,
+        timer: 6000,
+        showConfirmButton: false,
+        background: 'indianred'
+    });
 })
 
 // BOTÓN BORRAR LOCAL STORAGE
@@ -175,7 +255,32 @@ borrarLocalSt.classList.add('botones');
 borrarLocalSt.innerText = `Borrar Carrito Guardado`;
 
 borrarLocalSt.addEventListener('click', function() {
-    localStorage.clear();
+    Swal.fire({
+        text: '¿Estás seguro de borrar el carrito guardado?',
+        icon: 'question',
+        showConfirmButton: true,
+        showCancelButton: true,
+        confirmButtonText: 'Sí',
+        cancelButtonText: 'No'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            localStorage.clear();
+            Swal.fire({
+                text: 'El carrito se ha borrado con éxito',
+                icon: 'success',
+                timer: 5000
+            })
+        } else {
+            Swal.fire({
+                text: 'Cancelado',
+                icon: 'error',
+                confirmButtonText: 'Aceptar',
+                timer: 5000
+            })
+        }
+    })
 })
 
-document.body.appendChild(borrarLocalSt);
+contenedorBotones.appendChild(borrarLocalSt);
+
+document.body.appendChild(contenedorBotones);
